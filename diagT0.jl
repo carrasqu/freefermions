@@ -7,12 +7,17 @@ function σ(ϵ,Nboson)
      
 end
 
+
+
 # parameters in the Hamiltonian
-lx=5000 # lattice size
+lx=3000 # lattice size
+
+for lx=200:200:4000
+
 t=-1.0 # hopping
 V=0.0 # strenght of parabolic potential
 β=2000.0 # inverse temperature
-Mmax=20 # maximum matsubara frequency
+Mmax=2 # maximum matsubara frequency
 wM=(0:Mmax)*2*π/β # matsubara frequencies
 μ=0.0
 
@@ -35,30 +40,30 @@ H[lx,1]=t
 #diagonalizing H
 (ϵ,U)=eig(H)
 
-A=t*transpose(U[2:lx,1:lx])*U[1:lx-1,1:lx]-transpose(U[1:lx-1,1:lx])*U[2:lx,1:lx]
+A=t* ( transpose(U[2:lx,1:lx])*U[1:lx-1,1:lx]-transpose(U[1:lx-1,1:lx])*U[2:lx,1:lx] +  transpose(reshape(U[1,:],(1,lx)) )*reshape(U[lx,:],(1,lx))                        -transpose(reshape(U[lx,:],(1,lx)) )*reshape(U[1,:],(1,lx))  ) 
 B=-(t/lx)*diag(transpose(U[2:lx,1:lx])*U[1:lx-1,1:lx]+transpose(U[1:lx-1,1:lx])*U[2:lx,1:lx])
 nf=σ(ϵ,Nboson)
 kx=dot(nf,B)
 
 Nboson=sum(nf)
-println(Nboson)
-Λxx=zeros(Mmax+1)
+#println(Nboson)
+Λxx=complex(zeros(Mmax+1))
 
-for i=1:Mmax
+for i=2:Mmax
    for n=1:lx
        for np=1:lx
            if np!=n
-              Λxx[i]=Λxx[i]+A[n,np]*A[np,n]*(nf[np]-nf[n])/(wM[i]-(ϵ[np]-ϵ[n]))     
+              Λxx[i]=Λxx[i]+A[n,np]*A[np,n]*(nf[np]-nf[n])/(im*wM[i]-(ϵ[np]-ϵ[n]))     
            end
        end
    end
-   println(wM[i]," ",-(-kx+Λxx[i]/lx)," analytic ", 2.0/π )
+   println(lx," ", wM[i]," ",-(-kx+Λxx[i]/lx)," analytic ", 2.0/π )
 end
 
 
 
 
-
+end # end loop over system size
 
 
 

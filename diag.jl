@@ -3,17 +3,20 @@ function σ(ϵ,β,μ)
 end
 
 # parameters in the Hamiltonian
-lx=50 # lattice size
+lx=500 # lattice size
 t=-1.0 # hopping
-V=0.01 # strenght of parabolic potential
+V=0.0 # strenght of parabolic potential
 β=2000.0 # inverse temperature
-Mmax=100 # maximum matsubara frequency
+Mmax=2 # maximum matsubara frequency
 wM=(0:Mmax)*2*π/β # matsubara frequencies
 μ=0.0
+
+for lx=200:200:4000
 
 # Generating Hamiltonian
 H=zeros(lx,lx)
 
+β=10.0*lx
 for i = 1:lx
     if i<lx
      H[i,i+1]=t
@@ -31,18 +34,19 @@ nf=σ(ϵ,β,μ)
 kx=dot(nf,B)
 
 Nboson=sum(nf)
-println(Nboson)
-Λxx=zeros(Mmax+1)
+#println(Nboson)
+Λxx=complex(zeros(Mmax+1))
 
-for i=1:Mmax
+for i=2:Mmax
    for n=1:lx
        for np=1:lx
            if np!=n
-              Λxx[i]=Λxx[i]+A[n,np]*A[np,n]*(nf[np]-nf[n])/(wM[i]-(ϵ[np]-ϵ[n]))     
+              Λxx[i]=Λxx[i]+A[n,np]*A[np,n]*(nf[np]-nf[n])/(sqrt(complex(-1.))*wM[i]-(ϵ[np]-ϵ[n]))     
+               
            end
        end
    end
-   println(wM[i]," ",-(-kx+Λxx[i]/lx) )
+   println(lx," ", wM[i]," ",-(-kx+Λxx[i]/lx) )
 end
 
 
@@ -51,4 +55,4 @@ end
 
 
 
-
+end # lx loop
